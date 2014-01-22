@@ -1,28 +1,22 @@
 import time
 import random
-import math
-from shared import alphabet, test, matches
+from shared import test, matches
 
 
 def encrypt(text, key):
     random.seed(key)
-    table = list(alphabet)
-    random.shuffle(table)
-    ciphertext = ''
-    for c in text:
-        i = alphabet.index(c)
-        ciphertext += table[i]
-    return ciphertext
+    text = list(text)
+    random.shuffle(text)
+    l = list(xrange(0, len(text)))
+    random.shuffle(l)
+    return text
 
 
 def decrypt(text, key):
-    random.seed(key)
-    table = list(alphabet)
-    random.shuffle(table)
-    plaintext = ''
-    for c in text:
-        i = table.index(c)
-        plaintext += alphabet[i]
+    shuffled = encrypt(xrange(0, len(text)), key)
+    plaintext = list(xrange(0, len(text)))
+    for i in xrange(0, len(shuffled)):
+        plaintext[shuffled[i]] = text[i]
     return plaintext
 
 
@@ -31,15 +25,16 @@ def hack(ciphertext):
     count = 0
     try:
         while True:
-            guess = decrypt(ciphertext, count)
+            guess = ''.join(decrypt(ciphertext, count))
             count += 1
-            print 'Possible:', guess
+            m = matches(guess)
+            if m > 0:
+                print 'Possible:', guess
     except:
         tock = time.time()
         time_taken = int(tock - tick)
         print 'Tried %d guesses in %d seconds, that\'s %d per second' % (count, time_taken, count / time_taken)
-        years = math.factorial(len(alphabet)) / ((count / time_taken) * 60 * 60 * 24 * 365)
-        print 'It would take %d years to brute force this key' % (years,)
+        print 'It would take %d years to brute force this key' % (9 ** 157 / ((count / time_taken) * 60 * 60 * 24 * 365),)
 
 
 if __name__ == '__main__':
@@ -47,11 +42,11 @@ if __name__ == '__main__':
     if 'encrypt'.startswith(m):
         text = raw_input('plaintext: ')
         key = int(raw_input('key: '))
-        print 'ciphertext:', encrypt(text, key)
+        print 'ciphertext:', ''.join(encrypt(text, key))
     elif 'decrypt'.startswith(m):
         text = raw_input('ciphertext: ')
         key = int(raw_input('key: '))
-        print 'plaintext:', decrypt(text, key)
+        print 'plaintext:', ''.join(decrypt(text, key))
     elif 'hack'.startswith(m):
         text = raw_input('ciphertext: ')
         hack(text)

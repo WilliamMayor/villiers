@@ -1,7 +1,8 @@
 import math
 
-from shared import matches, placeholder, test
+from shared import matches, test
 
+placeholder = '$'
 
 def encrypt(text, key):
     ncols = int(math.ceil(len(text) / float(key)))
@@ -30,9 +31,7 @@ def decrypt(text, key):
 def hack(text):
     for key in xrange(1, len(text)):
         p = decrypt(text, key).replace(placeholder, '')
-        m = matches(p)
-        if m > 0:
-            yield p
+        yield p
 
 if __name__ == '__main__':
     m = raw_input('encrypt/decrypt/hack? ').lower()
@@ -44,7 +43,6 @@ if __name__ == '__main__':
         text = raw_input('ciphertext: ')
         key = int(raw_input('key: '))
         p = decrypt(text, key)
-        print 'raw:', p
         print 'plaintext:', p.replace(placeholder, '')
     elif 'hack'.startswith(m):
         text = raw_input('ciphertext: ')
